@@ -4,31 +4,37 @@
 
 **MyToken42** est un token compatible avec le standard BEP-20, déployé sur le **BNB Testnet**. Ce projet a été développé en utilisant **Solidity**, la bibliothèque **OpenZeppelin**, et déployé via **Remix**. Le projet inclut des fonctionnalités standards des tokens BEP-20 ainsi que des améliorations telles que le mint, le burn, et un système multisignature pour les actions critiques.
 
-OpenZeepplin Owner
+## Imports OpenZeppelin
 
-## TODO
+Le contrat utilise les 4 bibliothèques suivantes d'OpenZeppelin :
 
-Trouver une strategie de mint qui ressemble a de vrai token
+1. **`@openzeppelin/contracts/token/ERC20/ERC20.sol`** - Contrat de base ERC-20/BEP-20
+2. **`@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol`** - Extension pour brûler des tokens
+3. **`@openzeppelin/contracts/access/Ownable.sol`** - Gestion du propriétaire du contrat
+4. **`@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol`** - Extension pour mettre le contrat en pause (pause automatique des fonctions ERC20)
 
 ---
 
 ## Fonctionnalités principales
 
-| **Nom de la fonction**               | **Source**         | **Description**                                                                                   |
-|--------------------------------------|--------------------|---------------------------------------------------------------------------------------------------|
-| **totalSupply()**                    | OpenZeppelin       | Retourne l’offre totale de tokens.                                                              |
-| **balanceOf(address account)**       | OpenZeppelin       | Retourne la balance de tokens d’une adresse donnée.                                              |
-| **transfer(address recipient, uint256 amount)** | OpenZeppelin       | Permet de transférer des tokens d’une adresse à une autre.                                       |
-| **approve(address spender, uint256 amount)**   | OpenZeppelin       | Autorise une adresse à dépenser un montant spécifique de tokens au nom du propriétaire.          |
-| **allowance(address owner, address spender)**  | OpenZeppelin       | Retourne le montant que `spender` est autorisé à dépenser au nom de `owner`.                     |
-| **transferFrom(address sender, address recipient, uint256 amount)** | OpenZeppelin | Permet de transférer des tokens via une adresse autorisée.                                       |
-| **_transfer(address sender, address recipient, uint256 amount)** | OpenZeppelin (Interne) | Transfert interne utilisé par `transfer` et `transferFrom`.                                      |
-| **_approve(address owner, address spender, uint256 amount)** | OpenZeppelin (Interne) | Gestion interne des autorisations via `approve`.                                                 |
-| **mint(address to, uint256 amount)** | OpenZeppelin       | Crée de nouveaux tokens et les attribue à une adresse.                                           |
-| **burn(address account, uint256 amount)** | OpenZeppelin       | Détruit une quantité spécifique de tokens appartenant à une adresse.                             |
-| **submitTransaction(address to, uint256 amount)** | Bonus              | Propose une transaction à valider par un système multisignature avant exécution.                 |
-| **confirmTransaction(uint256 txIndex)**        | Bonus              | Ajoute une confirmation d’un signataire pour atteindre le seuil requis dans le multisignature.   |
-| **executeTransaction(uint256 txIndex)**        | Bonus              | Exécute une transaction validée par le nombre requis de signataires dans le système multisignature. |
+| **Nom de la fonction**               | **Import OpenZeppelin** | **Description**                                                                                   |
+|--------------------------------------|-------------------------|---------------------------------------------------------------------------------------------------|
+| **totalSupply()**                    | ERC20                   | Retourne l'offre totale de tokens.                                                              |
+| **balanceOf(address account)**       | ERC20                   | Retourne la balance de tokens d'une adresse donnée.                                              |
+| **transfer(address recipient, uint256 amount)** | ERC20       | Permet de transférer des tokens d'une adresse à une autre.                                       |
+| **approve(address spender, uint256 amount)**   | ERC20       | Autorise une adresse à dépenser un montant spécifique de tokens au nom du propriétaire.          |
+| **allowance(address owner, address spender)**  | ERC20       | Retourne le montant que `spender` est autorisé à dépenser au nom de `owner`.                     |
+| **transferFrom(address sender, address recipient, uint256 amount)** | ERC20 | Permet de transférer des tokens via une adresse autorisée.                                       |
+| **_transfer(address sender, address recipient, uint256 amount)** | ERC20 (Interne) | Transfert interne utilisé par `transfer` et `transferFrom`.                                      |
+| **_approve(address owner, address spender, uint256 amount)** | ERC20 (Interne) | Gestion interne des autorisations via `approve`.                                                 |
+| **burn(uint256 amount)** | ERC20Burnable       | Détruit une quantité de tokens appartenant à l'appelant.                             |
+| **burnFrom(address account, uint256 amount)** | ERC20Burnable       | Détruit une quantité spécifique de tokens appartenant à une adresse (avec autorisation).                             |
+| **owner()** | Ownable       | Retourne l'adresse du propriétaire du contrat.                                           |
+| **pause()** | ERC20Pausable       | Met le contrat en pause, suspendant toutes les opérations ERC20 (owner uniquement).                                           |
+| **unpause()** | ERC20Pausable       | Réactive le contrat après une pause (owner uniquement).                                           |
+| **submitTransaction(address to, uint256 amount)** | Bonus (Custom)              | Propose une transaction à valider par un système multisignature avant exécution.                 |
+| **confirmTransaction(uint256 txIndex)**        | Bonus (Custom)              | Ajoute une confirmation d'un signataire pour atteindre le seuil requis dans le multisignature.   |
+| **executeTransaction(uint256 txIndex)**        | Bonus (Custom)              | Exécute une transaction validée par le nombre requis de signataires dans le système multisignature. |
 
 ---
 
@@ -48,7 +54,7 @@ Trouver une strategie de mint qui ressemble a de vrai token
 1. Ouvrez le fichier `MyToken42.sol` dans Remix.
 2. Sélectionnez le compilateur Solidity (version `0.8.x`).
 3. Connectez Metamask au réseau **BNB Testnet** via `Injected Web3`.
-4. Déployez le contrat en fournissant la `supply initiale` (ex. : `4200000`).
+4. Déployez le contrat en fournissant le paramètre `_requiredConfirmations` (ex. : `1` pour le multisig).
 
 ### 4. Publication
 1. Copiez l'adresse du contrat déployé depuis Remix.
@@ -61,8 +67,8 @@ Trouver une strategie de mint qui ressemble a de vrai token
 
 - **Nom du token** : MyToken42
 - **Ticker** : MTK42
-- **Supply Initiale** : 4 200 000.
-- **Supply Max** : 42 000 000.
+- **Supply Initiale** : 42 000 000 (créés dans le constructeur)
+- **Supply Max** : 42 000 000
 - **Adresse du contrat** : `[à remplir après déploiement]`
 - **Réseau** : BNB Testnet
 - **Explorateur Blockchain** : [BscScan Testnet](https://testnet.bscscan.com)
